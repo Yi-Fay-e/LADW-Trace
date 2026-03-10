@@ -440,12 +440,12 @@
       {[
         ['出金次數',`${charStats.count} 次`,'text-amber-400'],
         ['平均抽數',`${charStats.avg} 抽`,'text-white'],
-        ['最幸運','第 '+charStats.best+' 抽','text-emerald-400'],
-        ['最慘一次','第 '+charStats.worst+' 抽','text-rose-400'],
+        ['最歐一次','第 '+charStats.best+' 抽','text-emerald-400'],
+        ['最非一次','第 '+charStats.worst+' 抽','text-rose-400'],
       ].map(([label,val,cls])=>(
         <div key={label} className="bg-white/5 border border-white/10 rounded-3xl p-5 text-center">
-          <p className="text-[12px] font-black text-slate-400 mb-3 tracking-widest uppercase">{label}</p>
-          <p className={`text-2xl font-black ${cls}`}>{val}</p>
+          <p className="text-[12px] text-slate-400 mb-3 tracking-widest uppercase">{label}</p>
+          <p className={`text-2xl ${cls}`}>{val}</p>
         </div>
       ))}
     </div>
