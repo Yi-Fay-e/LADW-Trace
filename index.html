@@ -200,6 +200,33 @@
         const items=pulls.map(p=>{total+=p.totalPulls;const c=CHARACTERS.find(c=>c.id===p.character);return{id:p.id,charName:c?.name||'未知',cost:p.totalPulls,accumulated:total};});
         return{totalPulls:total,pullCount:pulls.length,pityCount:pities.reduce((a,c)=>a+c.totalPulls,0),distribution:items.reverse()};
       }, [history,selectedEventFilter]);
+      const charStats = useMemo(()=>{
+  if(!filterChar||filterChar.id==='other') return null;
+  const pulls=history.filter(r=>r.character===filterChar.id&&r.recordType==='pull');
+  if(pulls.length===0) return null;
+  
+  // 合併歪卡+下一次的花費
+  const mergedCosts=[];
+  let pending=0;
+  [...pulls].reverse().forEach(p=>{
+    if(p.isLost5050){
+      pending+=p.totalPulls;
+    } else {
+      mergedCosts.push(pending+p.totalPulls);
+      pending=0;
+    }
+  });
+  if(pending>0) mergedCosts.push(pending); // 最後一筆是歪卡還沒結算
+  
+  if(mergedCosts.length===0) return null;
+  const total=mergedCosts.reduce((a,b)=>a+b,0);
+  return{
+    count:pulls.length,
+    avg:Math.round(total/mergedCosts.length),
+    best:Math.min(...mergedCosts),
+    worst:Math.max(...mergedCosts),
+  };
+},[history,filterChar]);
 
       const [isModalOpen,setIsModalOpen]=useState(false);
       const [editingId,setEditingId]=useState(null);
@@ -385,7 +412,8 @@
             </header>
 
             {filterChar?(
-              <div className="px-6 mb-8">
+              <>
+                <div className="px-6 mb-8">
                 <div className={`bg-gradient-to-br ${filterChar.solidColor} rounded-[2rem] pt-7 px-7 pb-3 text-white shadow-2xl relative overflow-hidden min-h-[160px] flex flex-col justify-center`}>
                   <div className="absolute inset-0 bg-black/5 pointer-events-none"></div>
                   <div className="relative z-10 flex justify-between items-start mb-2">
@@ -406,6 +434,24 @@
                   </div>
                 </div>
               </div>
+              {charStats&&(
+  <div className="px-6 mb-6">
+    <div className="grid grid-cols-2 gap-3">
+      {[
+        ['出金次數',`${charStats.count} 次`,'text-amber-400'],
+        ['平均抽數',`${charStats.avg} 抽`,'text-white'],
+        ['最幸運','第 '+charStats.best+' 抽','text-emerald-400'],
+        ['最慘一次','第 '+charStats.worst+' 抽','text-rose-400'],
+      ].map(([label,val,cls])=>(
+        <div key={label} className="bg-white/5 border border-white/10 rounded-3xl p-5 text-center">
+          <p className="text-[12px] font-black text-slate-400 mb-3 tracking-widest uppercase">{label}</p>
+          <p className={`text-2xl font-black ${cls}`}>{val}</p>
+        </div>
+      ))}
+    </div>
+  </div>
+)}
+              </>
             ):(
               <>
                 <div className="px-6 mb-4">
