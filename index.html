@@ -321,7 +321,7 @@
             <div className="w-full relative z-10 py-4 grid grid-cols-3 gap-y-10 gap-x-1 px-2 justify-items-center">
               {CHARACTERS.map(c=>(
                 <button key={c.id} onClick={()=>{setFilterChar(c);setView('main');}} className="group flex flex-col items-center gap-3 active:scale-95 transition-all">
-                  <div className="w-16 h-16 rounded-full flex items-center justify-center transition-all duration-300 group-hover:brightness-125" style={{background:`radial-gradient(circle, ${c.glowColor} 0%, ${c.glowColor.replace(/[\d\.]+\)$/,'0.4)')} 30%, transparent 70%)`}}>
+                  <div className="w-16 h-16 rounded-full flex items-center justify-center transition-all duration-300 group-hover:brightness-150 group-hover:scale-105" style={{background:`radial-gradient(circle, ${c.glowColor} 0%, ${c.glowColor.replace(/[\d\.]+\)$/,'0.4)')} 30%, transparent 70%)`}}>
                     <div className="p-2 rounded-full flex items-center justify-center text-white">{c.icon}</div>
                   </div>
                   <span className="text-[11px] font-bold text-slate-300 tracking-widest uppercase group-hover:text-white transition-colors">{c.name}</span>
