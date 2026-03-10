@@ -185,7 +185,7 @@
 
       const status = useMemo(() => {
         if(activeTab!=='event'&&activeTab!=='rerun') return {isGuaranteed:false,isTargetReady:false};
-        const ph=history.filter(r=>(r.poolType==='event'||r.poolType==='rerun')&&r.recordType==='pull');
+        const ph=history.filter(r=>r.poolType===activeTab&&r.recordType==='pull');
         if(ph.length===0) return {isGuaranteed:false,isTargetReady:false};
         const last=ph[0];
         return {isGuaranteed:last.isLost5050,isTargetReady:last.subPoolType==='multi'&&(last.isNotTarget||last.isLost5050)};
