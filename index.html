@@ -216,6 +216,7 @@
       const [isLost5050,setIsLost5050]=useState(false);
       const [isNotTarget,setIsNotTarget]=useState(false);
       const [inputMode,setInputMode]=useState('cost');
+      const [deleteConfirmId, setDeleteConfirmId] = useState(null);
 
       const openWishModal=()=>{
         setEditingId(null);setRecordType('pull');setSubPoolType('single');setPityLabel('墊池');setCardType('moon');
@@ -269,6 +270,7 @@
         const updatedPools={...pools,[activeTab]:{pity:newPoolPity}};
         setHistory(updated);setPools(updatedPools);
         storage.setHistory(updated);storage.setPools(updatedPools);
+        setCurrentPage(1);
         resetModal();
       };
 
@@ -497,7 +499,7 @@
                     <div key={record.id} onClick={()=>openEdit(record)} className={`rounded-3xl p-5 border transition-all relative overflow-hidden active:scale-[0.98] cursor-pointer group ${isPity?'bg-slate-900/40 border-slate-700/50':'bg-gradient-to-br from-amber-500/10 to-transparent border-amber-500/40'}`}>
                       <div className="absolute top-4 right-4 z-20 flex gap-2">
                         <button onClick={(e)=>{e.stopPropagation();openEdit(record);}} className="p-1.5 bg-white/10 hover:bg-white/20 rounded-lg text-slate-300"><Edit2 size={14}/></button>
-                        <button onClick={(e)=>deleteRecord(e,record.id)} className="p-1.5 bg-rose-500/10 hover:bg-rose-500/20 rounded-lg text-rose-400"><Trash2 size={14}/></button>
+                        <button onClick={(e)=>{e.stopPropagation();setDeleteConfirmId(record.id);}} className="p-1.5 bg-rose-500/10 hover:bg-rose-500/20 rounded-lg text-rose-400"><Trash2 size={14}/></button>
                       </div>
                       <div className="flex justify-between items-start mb-3 relative z-10">
                         <div className="flex items-center gap-2">
@@ -529,16 +531,40 @@
                 <div className="mt-10 flex items-center justify-center gap-3">
                   <button onClick={()=>setCurrentPage(p=>Math.max(p-1,1))} disabled={currentPage===1} className={`p-2 rounded-xl ${currentPage===1?'text-slate-800 opacity-20':'text-slate-400 bg-white/5 active:scale-90'}`}><ChevronLeft size={16}/></button>
                   <div className="flex items-center gap-1">
-                    {Array.from({length:totalPages},(_,i)=>i+1).map(page=>(
-                      <button key={page} onClick={()=>setCurrentPage(page)} className={`w-8 h-8 rounded-lg text-[11px] font-black ${currentPage===page?'bg-indigo-600 text-white shadow-lg':'text-slate-600 hover:text-slate-400'}`}>{page}</button>
-                    ))}
+                    {Array.from({length:totalPages},(_,i)=>i+1)
+  .filter(page=>page===1||page===totalPages||Math.abs(page-currentPage)<=1)
+  .reduce((acc,page,idx,arr)=>{
+    if(idx>0&&page-arr[idx-1]>1)acc.push('...');
+    acc.push(page);return acc;
+  },[])
+  .map((page,idx)=>
+    page==='...'
+      ?<span key={`dot-${idx}`} className="w-8 h-8 flex items-center justify-center text-slate-700 text-[11px]">…</span>
+      :<button key={page} onClick={()=>setCurrentPage(page)} className={`w-8 h-8 rounded-lg text-[11px] font-black ${currentPage===page?'bg-indigo-600 text-white shadow-lg':'text-slate-600 hover:text-slate-400'}`}>{page}</button>
+  )}
                   </div>
                   <button onClick={()=>setCurrentPage(p=>Math.min(p+1,totalPages))} disabled={currentPage===totalPages} className={`p-2 rounded-xl ${currentPage===totalPages?'text-slate-800 opacity-20':'text-slate-400 bg-white/5 active:scale-90'}`}><ChevronRight size={16}/></button>
                 </div>
               )}
             </div>
           </main>
-
+{deleteConfirmId&&(
+  <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/80 backdrop-blur-md p-4">
+    <div className="bg-[#0c0c16] border border-rose-500/30 rounded-[2rem] w-full max-w-xs p-8 shadow-2xl flex flex-col items-center gap-6">
+      <div className="w-12 h-12 rounded-full bg-rose-500/20 border border-rose-500/40 flex items-center justify-center">
+        <Trash2 size={20} className="text-rose-400"/>
+      </div>
+      <div className="text-center">
+        <p className="text-white font-black text-sm tracking-widest mb-2">確認刪除？</p>
+        <p className="text-slate-500 text-[11px]">此紀錄將永久移除，無法復原</p>
+      </div>
+      <div className="flex gap-3 w-full">
+        <button onClick={()=>setDeleteConfirmId(null)} className="flex-1 py-3 rounded-xl bg-white/5 border border-white/10 text-slate-400 font-black text-[11px]">取消</button>
+        <button onClick={(e)=>{deleteRecord(e,deleteConfirmId);setDeleteConfirmId(null);}} className="flex-1 py-3 rounded-xl bg-rose-500/80 border border-rose-500 text-white font-black text-[11px]">刪除</button>
+      </div>
+    </div>
+  </div>
+)}
           {isModalOpen&&(
             <div className="fixed inset-0 z-[100] flex items-end justify-center bg-black/90 backdrop-blur-md p-4">
               <div className="absolute inset-0" onClick={resetModal}></div>
