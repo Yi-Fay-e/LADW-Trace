@@ -195,7 +195,7 @@
 
       const eventAnalysis = useMemo(() => {
         if(selectedEventFilter==='all') return null;
-        const evRecs=history.filter(r=>r.eventName===selectedEventFilter).sort((a,b)=>new Date(a.date)-new Date(b.date));
+        const evRecs=history.filter(r=>r.eventName===selectedEventFilter).sort((a,b)=>new Date(a.eventDate||a.date)-new Date(b.eventDate||b.date));
         const pulls=evRecs.filter(r=>r.recordType==='pull');
         const pities=evRecs.filter(r=>r.recordType==='pity');
         let total=0;
@@ -204,7 +204,8 @@
       }, [history,selectedEventFilter]);
       const charStats = useMemo(()=>{
   if(!filterChar||filterChar.id==='other') return null;
-  const pulls=history.filter(r=>r.character===filterChar.id&&r.recordType==='pull');
+  const pulls=history.filter(r=>r.character===filterChar.id&&r.recordType==='pull')
+  .sort((a,b)=>new Date(a.eventDate||a.date)-new Date(b.eventDate||b.date));
   if(pulls.length===0) return null;
   
   // 合併歪卡+下一次的花費
