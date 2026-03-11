@@ -8,6 +8,9 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.development.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.development.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@300;400;500&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     * { box-sizing: border-box; }
@@ -62,6 +65,8 @@
     const Crown = ({size=16,className="",fill="none"}) => <SVGIcon size={size} className={className} fill={fill} d={[{type:'path',props:{d:"M2 20h20M5 20V10l7-7 7 7v10"}}]} />;
     const BarChart3 = ({size=16,className=""}) => <SVGIcon size={size} className={className} d={[{type:'path',props:{d:"M3 3v18h18"}},{type:'path',props:{d:"M18 17V9"}},{type:'path',props:{d:"M13 17V5"}},{type:'path',props:{d:"M8 17v-3"}}]} />;
     const Cloud = ({size=16,className=""}) => <SVGIcon size={size} className={className} d={[{type:'path',props:{d:"M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"}}]} />;
+    const Heart = ({size=16,className=""}) => <SVGIcon size={size} className={className} d={[{type:'path',props:{d:"M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"}}]} />;
+    const HeartCrack = ({size=16,className=""}) => <SVGIcon size={size} className={className} d={[{type:'path',props:{d:"M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"}},{type:'polyline',props:{points:"12 8 10 13 14 13 12 18"}}]} />;
 
     // --- 本地儲存工具 ---
     const STORAGE_KEYS = { history: 'lds_history', pools: 'lds_pools' };
@@ -433,24 +438,27 @@
                   </div>
                   <div className="relative z-10 mt-3 border-t border-white/10 pt-3 flex items-center">
                     <span className="absolute -top-1 -left-1 text-xl text-white/10 font-serif">"</span>
-                    <p className="text-[13px] font-medium italic tracking-tight text-white/90 leading-[1.2rem] max-w-full px-4 text-left w-full">{activeQuote}</p>
+                    <p className="text-[13px] font-light italic wide text-white/90 leading-[1.2rem] max-w-full px-4 text-left w-full" style={{fontFamily:"'Noto Serif TC', serif"}}>{activeQuote}</p>
                   </div>
                 </div>
               </div>
               {charStats&&(
   <div className="px-6 mb-6">
-    <div className="grid grid-cols-2 gap-3">
+    <div className="divide-y divide-white/10 border border-white/10 rounded-3xl overflow-hidden">
       {[
         ['出金次數',`${charStats.count} 次`,'text-amber-400'],
         ['平均抽數',`${charStats.avg} 抽`,'text-white'],
-        ['最歐一次','第 '+charStats.best+' 抽','text-emerald-400'],
-        ['最非一次','第 '+charStats.worst+' 抽','text-rose-400'],
-      ].map(([label,val,cls])=>(
-        <div key={label} className="bg-white/5 border border-white/10 rounded-3xl p-5 text-center">
-          <p className="text-[12px] text-slate-400 mb-3 tracking-widest uppercase">{label}</p>
-          <p className={`text-2xl ${cls}`}>{val}</p>
+        ['最歐一次','第 '+charStats.best+' 抽','text-sky-400'],
+        ['最非一次','第 '+charStats.worst+' 抽','text-red-400'],
+].map(([label,val,cls])=>(
+        <div key={label} className="flex items-center justify-between px-6 py-2">
+          <div className="flex items-center gap-2">
+            <span className="inline-block w-3 h-px bg-amber-500/60"></span>
+            <p className="text-[13px] text-slate-300 tracking-widest uppercase">{label}</p>
+          </div>
+          <span className={`text-xs px-3 py-0.5 rounded-full bg-white/10 border border-white/10 ${cls}`}>{val}</span>
         </div>
-      ))}
+))}
     </div>
   </div>
 )}
