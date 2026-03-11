@@ -291,7 +291,7 @@
         }
         const now=new Date().toISOString();
         const recordData={
-          character:selectedChar||'other',eventName:eventName||'一般活動',eventDate:eventDate.replace(/-/g,'/')||new Date().toLocaleDateString('zh-TW'),
+          character:selectedChar||'other',eventName:eventName||'一般活動',eventDate:eventDate.replace(/-/g,'/')||(()=>{const n=new Date();return`${n.getFullYear()}/${String(n.getMonth()+1).padStart(2,'0')}/${String(n.getDate()).padStart(2,'0')}`})(),
           cardName:cardName||(recordType==='pity'?(pityLabel==='墊池'?'墊池紀錄':'手動修正'):'未命名思念'),
           cardType,subPoolType,pityLabel:recordType==='pity'?pityLabel:null,
           totalPulls:savedTotalPulls,remainingAtRecord:savedRemaining,recordType,
@@ -517,7 +517,7 @@
                 <h2 className="text-xs font-black tracking-[0.3em] text-slate-500 uppercase flex items-center gap-2"><History size={14}/>歷程</h2>
                 {!filterChar&&(
                   <div className="relative">
-                    <select value={selectedEventFilter} onChange={(e)=>setSelectedEventFilter(e.target.value)} className="bg-white/5 border border-white/10 rounded-lg pl-8 pr-3 py-1.5 text-[11px] font-black text-slate-400 outline-none appearance-none hover:bg-white/10 transition-all">
+                    <select value={selectedEventFilter} onChange={(e)=>{setSelectedEventFilter(e.target.value);setCurrentPage(1);}} className="bg-white/5 border border-white/10 rounded-lg pl-8 pr-3 py-1.5 text-[11px] font-black text-slate-400 outline-none appearance-none hover:bg-white/10 transition-all">
                       <option value="all">全活動歷程</option>
                       {eventOptions.filter(o=>o!=='all').map(o=><option key={o} value={o}>{o}</option>)}
                     </select>
