@@ -326,8 +326,17 @@
 
       const handleExport=()=>{
         const blob=new Blob([JSON.stringify({history,pools,exportedAt:new Date().toISOString(),version:'1.0'},null,2)],{type:'application/json'});
-        const url=URL.createObjectURL(blob);const a=document.createElement('a');
-        a.href=url;a.download=`思念許願碎片_${new Date().toISOString().split('T')[0]}.json`;a.click();URL.revokeObjectURL(url);
+        const url=URL.createObjectURL(blob);
+        const a=document.createElement('a');
+        a.href=url;
+        const now=new Date();
+        const date=now.toLocaleDateString('zh-TW').replace(/\//g,'-');
+        const hour=now.getHours();
+        const min=String(now.getMinutes()).padStart(2,'0');
+        const period=hour<12?'上午':'下午';
+        const h=hour%12||12;
+        a.download=`思念許願碎片_${date}_${period}${h}點${min}分.json`;
+        a.click();URL.revokeObjectURL(url);
       };
 
       const handleImport=(e)=>{
@@ -633,7 +642,7 @@
 )}
           {isModalOpen&&(
             <div className="fixed inset-0 z-[100] flex items-end justify-center bg-black/90 backdrop-blur-md p-4">
-              <div className="absolute inset-0" onClick={resetModal}></div>
+              <div className="absolute inset-0"></div>
               <div className="bg-[#0c0c16] border border-white/10 rounded-[3rem] w-full max-w-sm relative p-8 shadow-2xl overflow-y-auto max-h-[90vh] custom-scrollbar">
                 <button onClick={resetModal} className="absolute left-6 top-8 text-slate-500 hover:text-white"><ChevronLeft size={24}/></button>
                 <h3 className="text-lg font-black text-white tracking-widest mb-8 text-center mt-6">登錄思念紀錄</h3>
@@ -715,7 +724,10 @@
                       <input type="number" value={inputMode==='cost'?pullCountInput:remainingPullsInput} onChange={(e)=>inputMode==='cost'?setPullCountInput(e.target.value):setRemainingPullsInput(e.target.value)} className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-[12px] text-slate-200 focus:outline-none"/>
                     </div>
                   </div>
-                  <button onClick={submitRecord} className="w-full py-5 rounded-full bg-indigo-600 text-white font-black text-[11px] uppercase tracking-[0.3em] shadow-xl active:scale-95">確認登錄</button>
+                  <div className="flex gap-3">
+                    <button onClick={resetModal} className="flex-1 py-5 rounded-full bg-white/5 border border-white/10 text-slate-400 font-black text-[11px] uppercase tracking-[0.3em] active:scale-95">取消</button>
+                    <button onClick={submitRecord} className="flex-1 py-5 rounded-full bg-indigo-600 text-white font-black text-[11px] uppercase tracking-[0.3em] shadow-xl active:scale-95">確認登錄</button>
+                 </div>
                 </div>
               </div>
             </div>
