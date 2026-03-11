@@ -340,7 +340,8 @@
       };
 
       const handleImport=(e)=>{
-        const file=e.target.files[0];if(!file) return;
+  const file=e.target.files[0];if(!file) return;
+  if(history.length>0&&!window.confirm(`目前已有 ${history.length} 筆紀錄，匯入後將完全覆蓋，確定繼續？`)) return;
         const reader=new FileReader();
         reader.onload=(ev)=>{
           try{
@@ -500,9 +501,9 @@
                     <div className="mt-6 flex flex-col items-center gap-3">
                       <span className="px-4 py-1.5 rounded-full text-[11px] font-black border bg-white/10 border-white/20 text-slate-100 italic">已累積 {pityInfo.accumulated} 抽</span>
                       <div className="flex gap-2">
-                        <div className={`px-3 py-1 rounded-full text-[11px] font-black tracking-widest border ${status.isGuaranteed?'bg-rose-500/30 border-rose-500/60 text-white':'bg-white/10 border-white/20 text-slate-200'}`}>{status.isGuaranteed?'大保底':'小保底'}</div>
-                        {status.isTargetReady&&<div className="px-3 py-1 rounded-full text-[11px] font-black tracking-widest border bg-amber-500/30 border-amber-500/60 text-white">定向中</div>}
-                      </div>
+  {activeTab!=='standard'&&<div className={`px-3 py-1 rounded-full text-[11px] font-black tracking-widest border ${status.isGuaranteed?'bg-rose-500/30 border-rose-500/60 text-white':'bg-white/10 border-white/20 text-slate-200'}`}>{status.isGuaranteed?'大保底':'小保底'}</div>}
+  {status.isTargetReady&&<div className="px-3 py-1 rounded-full text-[11px] font-black tracking-widest border bg-amber-500/30 border-amber-500/60 text-white">定向中</div>}
+</div>
                     </div>
                   </div>
                 </div>
@@ -593,7 +594,7 @@
                             {showNotTargetTag&&<span className="text-[9px] bg-sky-500/10 text-sky-400 px-1.5 py-0.5 rounded font-black italic border border-sky-500/20">非定向</span>}
                             {showTargetTag&&<span className="text-[9px] bg-amber-500/10 text-amber-400 px-1.5 py-0.5 rounded font-black italic border border-amber-500/30 flex items-center gap-0.5"><Crown size={8} fill="currentColor"/> 定向</span>}
                           </div>
-                          <div className="flex items-center gap-1 mb-1"><Tag size={10} className="text-indigo-400 opacity-70"/><p className="text-[11px] font-black text-indigo-400/80 tracking-wider truncate uppercase">{record.eventName||'一般活動'}</p></div>
+                          <div className="flex items-center gap-1 mb-1"><Tag size={10} className="text-indigo-400 opacity-70"/><p className="text-[11px] font-black text-indigo-400/80 tracking-wider truncate">{record.eventName||'一般活動'}</p></div>
                           <div className="flex items-center gap-1.5">{record.cardType==='sun'?<Sun size={12} className="text-red-500"/>:<Moon size={12} className="text-sky-400"/>}<p className="text-[14px] font-bold text-slate-100 truncate leading-tight">{record.cardName}</p></div>
                         </div>
                       </div>
