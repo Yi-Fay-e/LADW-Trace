@@ -258,7 +258,7 @@
         setPullCountInput(pityInfo.accumulated>0?(pityInfo.accumulated+1).toString():'');
         setRemainingPullsInput(currentRemaining);setEventName(selectedEventFilter!=='all'?selectedEventFilter:'');
         setEventDate(new Date().toISOString().split('T')[0]);setCardName('');setIsLost5050(false);
-        setIsNotTarget(false);setInputMode('cost');setIsModalOpen(true);
+        setIsNotTarget(false);setInputMode('cost');setSelectedChar(null);setIsModalOpen(true);
       };
 
       const openEdit=(record)=>{
@@ -486,7 +486,7 @@
                 <div className="px-6 mb-4">
                   <div className="grid grid-cols-4 gap-1 p-1 bg-white/5 rounded-2xl border border-white/10">
                     {MAIN_TABS.map(tab=>(
-                      <button key={tab.id} onClick={()=>{setActiveTab(tab.id);setSelectedEventFilter('all');}} className={`py-3 rounded-xl transition-all text-[11px] font-black ${activeTab===tab.id?'bg-indigo-600 text-white shadow-lg':'text-slate-400 hover:text-slate-200'}`}>{tab.name}</button>
+                      <button key={tab.id} onClick={()=>{setActiveTab(tab.id);setSelectedEventFilter('all');setCurrentPage(1);}} className={`py-3 rounded-xl transition-all text-[11px] font-black ${activeTab===tab.id?'bg-indigo-600 text-white shadow-lg':'text-slate-400 hover:text-slate-200'}`}>{tab.name}</button>
                     ))}
                   </div>
                 </div>
@@ -659,8 +659,8 @@
                   <div>
                     <label className="text-[10px] text-slate-500 font-black uppercase mb-3 block tracking-widest text-center">紀錄性質</label>
                     <div className="grid grid-cols-2 gap-3 p-1 bg-white/5 rounded-2xl">
-                      <button onClick={()=>setRecordType('pull')} className={`flex items-center justify-center gap-2 py-3 rounded-xl text-[12px] font-black ${recordType==='pull'?'bg-amber-500 text-black shadow-lg':'text-slate-500'}`}><Target size={14}/> 出金</button>
-                      <button onClick={()=>setRecordType('pity')} className={`flex items-center justify-center gap-2 py-3 rounded-xl text-[12px] font-black ${recordType==='pity'?'bg-indigo-600 text-white shadow-lg':'text-slate-500'}`}><Zap size={14}/> 墊池</button>
+                      <button onClick={()=>{setRecordType('pull');setInputMode('cost');}} className={`flex items-center justify-center gap-2 py-3 rounded-xl text-[12px] font-black ${recordType==='pull'?'bg-amber-500 text-black shadow-lg':'text-slate-500'}`}><Target size={14}/> 出金</button>
+                      <button onClick={()=>{setRecordType('pity');setInputMode('remain');}} className={`flex items-center justify-center gap-2 py-3 rounded-xl text-[12px] font-black ${recordType==='pity'?'bg-indigo-600 text-white shadow-lg':'text-slate-500'}`}><Zap size={14}/> 墊池</button>
                     </div>
                   </div>
                   <div>
@@ -706,19 +706,16 @@
                     </div>
                   )}
                   <div className="pt-4 border-t border-white/5 space-y-4">
-                    <div>
-                      <label className="text-[10px] text-slate-500 font-black uppercase mb-3 block tracking-widest text-center">選擇填寫方式</label>
-                      <div className="relative">
-                        <select value={inputMode} onChange={(e)=>setInputMode(e.target.value)} className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-[12px] font-black text-slate-200 outline-none appearance-none">
-                          <option value="cost">花費抽數</option>
-                          <option value="remain">剩餘抽數</option>
-                        </select>
-                        <ChevronDown size={14} className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500"/>
-                      </div>
-                    </div>
-                    <p className="text-[10px] text-slate-400 tracking-wide mt-1 px-1">
-                   {inputMode==='cost'?'✦ 出金建議使用此模式':'✦ 墊池建議使用此模式'}
-                   </p>
+  <div>
+    <label className="text-[10px] text-slate-500 font-black uppercase mb-3 block tracking-widest text-center">選擇填寫方式</label>
+    <div className="grid grid-cols-2 gap-3 p-1 bg-white/5 rounded-2xl border border-white/10">
+      <button onClick={()=>setInputMode('cost')} className={`py-2.5 rounded-xl text-[11px] font-black ${inputMode==='cost'?'bg-indigo-600 text-white':'text-slate-500'}`}>花費抽數</button>
+      <button onClick={()=>setInputMode('remain')} className={`py-2.5 rounded-xl text-[11px] font-black ${inputMode==='remain'?'bg-indigo-600 text-white':'text-slate-500'}`}>剩餘抽數</button>
+    </div>
+    <p className="text-[10px] text-slate-200 tracking-wide mt-1 px-1">
+      {inputMode==='cost'?'✦ 出金建議使用此模式':'✦ 墊池建議使用此模式'}
+    </p>
+  </div>
                     <div>
                       <label className="text-[10px] text-slate-500 font-black uppercase mb-2 block tracking-widest">{inputMode==='cost'?'花費抽數':'剩餘抽數'}</label>
                       <input type="number" value={inputMode==='cost'?pullCountInput:remainingPullsInput} onChange={(e)=>inputMode==='cost'?setPullCountInput(e.target.value):setRemainingPullsInput(e.target.value)} className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-[12px] text-slate-200 focus:outline-none"/>
