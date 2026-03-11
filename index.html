@@ -448,7 +448,7 @@
       {[
         ['出金次數',`${charStats.count} 次`,'text-amber-400'],
         ['平均抽數',`${charStats.avg} 抽`,'text-white'],
-        ['最歐一次','第 '+charStats.best+' 抽','text-sky-400'],
+        ['最歐一次','第 '+charStats.best+' 抽','text-sky-300'],
         ['最非一次','第 '+charStats.worst+' 抽','text-red-400'],
 ].map(([label,val,cls])=>(
         <div key={label} className="flex items-center justify-between px-6 py-2">
@@ -698,6 +698,9 @@
                         <ChevronDown size={14} className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500"/>
                       </div>
                     </div>
+                    <p className="text-[10px] text-slate-400 tracking-wide mt-1 px-1">
+                   {inputMode==='cost'?'✦ 出金建議使用此模式':'✦ 墊池建議使用此模式'}
+                   </p>
                     <div>
                       <label className="text-[10px] text-slate-500 font-black uppercase mb-2 block tracking-widest">{inputMode==='cost'?'花費抽數':'剩餘抽數'}</label>
                       <input type="number" value={inputMode==='cost'?pullCountInput:remainingPullsInput} onChange={(e)=>inputMode==='cost'?setPullCountInput(e.target.value):setRemainingPullsInput(e.target.value)} className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-[12px] text-slate-200 focus:outline-none"/>
