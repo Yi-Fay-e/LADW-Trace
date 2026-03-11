@@ -674,7 +674,7 @@
   <input type="text" placeholder="例：人間繾綣意" value={eventName} onChange={(e)=>{setEventName(e.target.value);setShowEventList(true);}} onFocus={()=>setShowEventList(true)} onBlur={()=>setTimeout(()=>setShowEventList(false),150)} className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-[12px] text-slate-200 focus:outline-none"/>
   {showEventList&&eventOptions.filter(o=>o!=='all'&&(eventName===''||o.includes(eventName))).length>0&&(
     <div className="absolute z-50 w-full mt-1 bg-[#0c0c16] border border-white/10 rounded-2xl overflow-hidden shadow-2xl">
-      {eventOptions.filter(o=>o!=='all'&&(eventName===''||o.includes(eventName))).map(o=>(
+      {(eventName===''?eventOptions.filter(o=>o!=='all').slice(0,8):eventOptions.filter(o=>o!=='all'&&o.includes(eventName))).map(o=>(
         <button key={o} onMouseDown={()=>{setEventName(o);setShowEventList(false);}} className="w-full px-4 py-3 text-left text-[12px] text-slate-300 font-black hover:bg-white/10 border-b border-white/5 last:border-b-0">
           {o}
         </button>
