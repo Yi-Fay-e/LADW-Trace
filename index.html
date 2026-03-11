@@ -176,7 +176,8 @@
       }, [filterChar]);
 
       const pityInfo = useMemo(() => {
-        const ph=history.filter(r=>r.poolType===activeTab);
+        const ph=history.filter(r=>r.poolType===activeTab)
+  .sort((a,b)=>{const da=new Date(a.eventDate||a.date),db=new Date(b.eventDate||b.date);return db-da;});
         if(ph.length===0) return {remaining:maxPity-(pools[activeTab]?.pity||0),accumulated:pools[activeTab]?.pity||0};
         return {remaining:ph[0].remainingAtRecord,accumulated:maxPity-ph[0].remainingAtRecord};
       }, [history,activeTab,pools]);
@@ -185,7 +186,8 @@
 
       const status = useMemo(() => {
         if(activeTab!=='event'&&activeTab!=='rerun') return {isGuaranteed:false,isTargetReady:false};
-        const ph=history.filter(r=>r.poolType===activeTab&&r.recordType==='pull');
+        const ph=history.filter(r=>r.poolType===activeTab&&r.recordType==='pull')
+  .sort((a,b)=>{const da=new Date(a.eventDate||a.date),db=new Date(b.eventDate||b.date);return db-da;});
         if(ph.length===0) return {isGuaranteed:false,isTargetReady:false};
         const last=ph[0];
         return {isGuaranteed:last.isLost5050,isTargetReady:last.subPoolType==='multi'&&(last.isNotTarget||last.isLost5050)};
