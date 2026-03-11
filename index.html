@@ -310,10 +310,19 @@
       };
 
       const deleteRecord=(e,id)=>{
-        e.stopPropagation();
-        const updated=history.filter(r=>r.id!==id);
-        setHistory(updated);storage.setHistory(updated);
-      };
+  e.stopPropagation();
+  const updated=history.filter(r=>r.id!==id);
+  setHistory(updated);storage.setHistory(updated);
+  const updatedPools={...pools};
+  MAIN_TABS.forEach(tab=>{
+    const ph=updated.filter(r=>r.poolType===tab.id)
+      .sort((a,b)=>{const da=new Date(a.eventDate||a.date),db=new Date(b.eventDate||b.date);return db-da;});
+    if(ph.length===0) updatedPools[tab.id]={pity:0};
+    else if(ph[0].recordType==='pity') updatedPools[tab.id]={pity:ph[0].totalPulls};
+    else updatedPools[tab.id]={pity:0};
+  });
+  setPools(updatedPools);storage.setPools(updatedPools);
+};
 
       const handleExport=()=>{
         const blob=new Blob([JSON.stringify({history,pools,exportedAt:new Date().toISOString(),version:'1.0'},null,2)],{type:'application/json'});
