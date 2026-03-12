@@ -211,27 +211,27 @@
   const pulls=history.filter(r=>r.character===filterChar.id&&r.recordType==='pull')
   .sort((a,b)=>new Date(a.eventDate||a.date)-new Date(b.eventDate||b.date));
   if(pulls.length===0) return null;
-  
-  // 合併歪卡+下一次的花費
+
+  // 從舊到新，遇歪卡累積pending，遇限定卡（非歪）才合併
   const mergedCosts=[];
   let pending=0;
-  [...pulls].reverse().forEach(p=>{
+  pulls.forEach(p=>{
     if(p.isLost5050){
-      pending+=p.totalPulls;
+      pending+=p.totalPulls; // 歪卡累積，等待下一次限定卡
     } else {
-      mergedCosts.push(pending+p.totalPulls);
+      mergedCosts.push(pending+p.totalPulls); // 合併歪卡+這次限定卡
       pending=0;
     }
   });
-  if(pending>0) mergedCosts.push(pending); // 最後一筆是歪卡還沒結算
-  
+  // pending>0 代表最後一筆是歪卡，尚未出限定，不計入平均/最歐/最非
+
   if(mergedCosts.length===0) return null;
   const total=mergedCosts.reduce((a,b)=>a+b,0);
   return{
-    count:pulls.length,
-    avg:Math.round(total/mergedCosts.length),
-    best:Math.min(...mergedCosts),
-    worst:Math.max(...mergedCosts),
+    count:pulls.length,                        // 出金次數含歪卡
+    avg:Math.round(total/mergedCosts.length),  // 平均只算限定卡花費
+    best:Math.min(...mergedCosts),             // 最歐（含歪卡合併）
+    worst:Math.max(...mergedCosts),            // 最非（含歪卡合併）
   };
 },[history,filterChar]);
 
@@ -464,8 +464,8 @@
   <div className="px-6 mb-6">
     <div className="divide-y divide-white/10 border border-white/10 rounded-3xl overflow-hidden">
       {[
-        ['出金次數',`${charStats.count} 次`,'text-amber-400'],
-        ['平均抽數',`${charStats.avg} 抽`,'text-white'],
+        ['出金次數(全部出金數)',`${charStats.count} 次`,'text-amber-400'],
+        ['平均抽數(活動限定卡)',`${charStats.avg} 抽`,'text-white'],
         ['最歐一次','第 '+charStats.best+' 抽','text-sky-300'],
         ['最非一次','第 '+charStats.worst+' 抽','text-red-400'],
 ].map(([label,val,cls])=>(
