@@ -203,7 +203,7 @@
         const pulls=evRecs.filter(r=>r.recordType==='pull');
         const pities=evRecs.filter(r=>r.recordType==='pity');
         let total=0;
-        const items=pulls.map(p=>{total+=p.totalPulls;const c=CHARACTERS.find(c=>c.id===p.character);return{id:p.id,charName:c?.name||'未知',cost:p.totalPulls,accumulated:total};});
+        const items=pulls.map(p=>{total+=p.totalPulls;return{id:p.id,charName:p.cardName||p.character||'未知',cost:p.totalPulls,accumulated:total};});
         return{totalPulls:total,pullCount:pulls.length,pityCount:pities.reduce((a,c)=>a+c.totalPulls,0),distribution:items.reverse()};
       }, [history,selectedEventFilter]);
       const charStats = useMemo(()=>{
