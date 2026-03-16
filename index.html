@@ -77,6 +77,14 @@
       setPools: (data) => { localStorage.setItem(STORAGE_KEYS.pools, JSON.stringify(data)); },
     };
     const generateId = () => `${Date.now()}_${Math.random().toString(36).slice(2,9)}`;
+    const APP_VERSION = '1.1.0';
+const PATCH_NOTES = [
+  { type:'date', text:'115.3.16' },
+  { type:'item', text:'特殊池保底卡片新增已抽進度顯示' },
+  { type:'item', text:'特殊池登錄自動帶入自選卡順序' },
+  { type:'date', text:'115.3.14' },
+  { type:'item', text:'常駐池自動填入活動名稱「極空迴響」' },
+];
 
     // --- 專屬圖標組件 ---
     function CreatorCat({ size=14, className="" }) {
@@ -159,11 +167,17 @@
       const [selectedEventFilter, setSelectedEventFilter] = useState('all');
       const [pools, setPools] = useState({event:{pity:0},rerun:{pity:0},special:{pity:0},standard:{pity:0}});
       const [currentPage, setCurrentPage] = useState(1);
+      const [showPatchNotes, setShowPatchNotes] = useState(false);
       const itemsPerPage = 10;
       const maxPity = 70;
 
       useEffect(() => {
-        const h = storage.getHistory().sort((a,b) => {
+  const savedVersion = localStorage.getItem('lds_version');
+  if(savedVersion !== APP_VERSION) setShowPatchNotes(true);
+}, []);
+
+useEffect(() => {
+  const h = storage.getHistory().sort((a,b) => {
           const da=new Date(a.eventDate||a.date), db=new Date(b.eventDate||b.date);
           if(db-da!==0) return db-da;
           return (b.date||"").localeCompare(a.date||"");
@@ -187,6 +201,10 @@
       }, [history,activeTab,pools]);
 
       const currentRemaining = pityInfo.remaining;
+      const specialCardIndex = useMemo(()=>{
+  if(activeTab!=='special') return 0;
+  return history.filter(r=>r.poolType==='special'&&r.recordType==='pull').length+1;
+},[history,activeTab]);
 
       const status = useMemo(() => {
         if(activeTab!=='event'&&activeTab!=='rerun') return {isGuaranteed:false,isTargetReady:false};
@@ -489,6 +507,7 @@
                       <button key={tab.id} onClick={()=>{setActiveTab(tab.id);setSelectedEventFilter('all');setCurrentPage(1);}} className={`py-3 rounded-xl transition-all text-[11px] font-black ${activeTab===tab.id?'bg-indigo-600 text-white shadow-lg':'text-slate-400 hover:text-slate-200'}`}>{tab.name}</button>
                     ))}
                   </div>
+                  {activeTab==='special'&&<p className="text-[11px] text-indigo-300 font-black tracking-widest mt-2 px-1">＊如週年「心像標定」的五星自選池</p>}
                 </div>
                 <div className="px-6 mb-6">
                   <div className="bg-gradient-to-br from-slate-900/60 to-black/80 rounded-[2.5rem] p-8 border border-white/10 text-center shadow-2xl">
@@ -499,8 +518,13 @@
                     </div>
                     <div className="mt-6 flex flex-col items-center gap-3">
                       <span className="px-4 py-1.5 rounded-full text-[11px] font-black border bg-white/10 border-white/20 text-slate-100 italic">已累積 {pityInfo.accumulated} 抽</span>
+{activeTab==='special'&&(
+  <span className="px-4 py-1.5 rounded-full text-[11px] font-black border bg-indigo-500/20 border-indigo-500/40 text-indigo-200 italic">
+    已抽 {history.filter(r=>r.poolType==='special').reduce((a,r)=>a+r.totalPulls,0)} / 350
+  </span>
+)}
                       <div className="flex gap-2">
-  {activeTab!=='standard'&&<div className={`px-3 py-1 rounded-full text-[11px] font-black tracking-widest border ${status.isGuaranteed?'bg-rose-500/30 border-rose-500/60 text-white':'bg-white/10 border-white/20 text-slate-200'}`}>{status.isGuaranteed?'大保底':'小保底'}</div>}
+  {(activeTab==='event'||activeTab==='rerun')&&<div className={`px-3 py-1 rounded-full text-[11px] font-black tracking-widest border ${status.isGuaranteed?'bg-rose-500/30 border-rose-500/60 text-white':'bg-white/10 border-white/20 text-slate-200'}`}>{status.isGuaranteed?'大保底':'小保底'}</div>}
   {status.isTargetReady&&<div className="px-3 py-1 rounded-full text-[11px] font-black tracking-widest border bg-amber-500/30 border-amber-500/60 text-white">定向中</div>}
 </div>
                     </div>
@@ -638,6 +662,30 @@
               )}
             </div>
           </main>
+          {showPatchNotes&&(
+  <div className="fixed inset-0 z-[300] flex items-center justify-center bg-black/80 backdrop-blur-md p-4">
+    <div className="bg-[#0c0c16] border border-indigo-500/30 rounded-[2rem] w-full max-w-xs p-8 shadow-2xl flex flex-col gap-6">
+      <div className="flex flex-col items-center gap-2">
+        <div className="w-10 h-10 rounded-full bg-indigo-500/20 border border-indigo-500/40 flex items-center justify-center">
+          <Sparkles size={18} className="text-indigo-300"/>
+        </div>
+        <p className="text-white font-black text-sm tracking-widest">版本更新</p>
+        <p className="text-slate-500 text-[11px]">v{APP_VERSION}</p>
+      </div>
+      <div className="flex flex-col gap-2">
+        {PATCH_NOTES.map((note,idx)=>
+          note.type==='date'
+            ?<p key={idx} className="text-indigo-300 text-[11px] font-black tracking-widest mt-2">{note.text}</p>
+            :<div key={idx} className="flex items-start gap-2">
+              <span className="w-1 h-1 rounded-full bg-slate-500 mt-1.5 flex-shrink-0"></span>
+              <p className="text-slate-300 text-[11px]">{note.text}</p>
+            </div>
+        )}
+      </div>
+      <button onClick={()=>{localStorage.setItem('lds_version',APP_VERSION);setShowPatchNotes(false);}} className="w-full py-3 rounded-xl bg-indigo-600 text-white font-black text-[11px] tracking-widest">知道了</button>
+    </div>
+  </div>
+)}
 {deleteConfirmId&&(
   <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/80 backdrop-blur-md p-4">
     <div className="bg-[#0c0c16] border border-rose-500/30 rounded-[2rem] w-full max-w-xs p-8 shadow-2xl flex flex-col items-center gap-6">
@@ -662,6 +710,12 @@
                 <button onClick={resetModal} className="absolute left-6 top-8 text-slate-500 hover:text-white"><ChevronLeft size={24}/></button>
                 <h3 className="text-lg font-black text-white tracking-widest mb-8 text-center mt-6">登錄思念紀錄</h3>
                 <div className="space-y-6">
+                  {activeTab==='special'&&(
+  <div className="flex items-center justify-between p-4 bg-indigo-500/5 rounded-2xl border border-indigo-500/20">
+    <span className="text-[12px] font-black text-indigo-300">自選卡順序</span>
+    <span className="px-4 py-1.5 rounded-full text-[11px] font-black bg-indigo-500/20 border border-indigo-500/40 text-indigo-200">第 {specialCardIndex} 張</span>
+  </div>
+)}
                   {activeTab==='event'&&(
                     <div>
                       <label className="text-[10px] text-slate-500 font-black uppercase mb-3 block tracking-widest text-center">限定池類型</label>
@@ -716,7 +770,7 @@
                     <label className="text-[10px] text-slate-500 font-black uppercase mb-2 block tracking-widest">思念全名</label>
                     <input type="text" placeholder="例如：沈星回．心緒捕捉" value={cardName} onChange={(e)=>setCardName(e.target.value)} className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-[12px] text-slate-200 focus:outline-none"/>
                   </div>
-                  {recordType==='pull'&&activeTab!=='standard'&&(
+                  {recordType==='pull'&&(activeTab==='event'||activeTab==='rerun')&&(
                     <div className="space-y-4">
                       <div className="flex items-center justify-between p-4 bg-rose-500/5 rounded-2xl border border-rose-500/20">
                         <span className="text-[12px] font-black text-rose-300">歪卡？</span>
