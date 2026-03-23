@@ -77,13 +77,11 @@
       setPools: (data) => { localStorage.setItem(STORAGE_KEYS.pools, JSON.stringify(data)); },
     };
     const generateId = () => `${Date.now()}_${Math.random().toString(36).slice(2,9)}`;
-    const APP_VERSION = '1.1.0';
+    const APP_VERSION = '1.2.0';
 const PATCH_NOTES = [
-  { type:'date', text:'115.3.16' },
-  { type:'item', text:'特殊池保底卡片新增已抽進度顯示' },
-  { type:'item', text:'特殊池登錄自動帶入自選卡順序' },
-  { type:'date', text:'115.3.14' },
-  { type:'item', text:'常駐池自動填入活動名稱「極空迴響」' },
+  { type:'date', text:'115.3.23' },
+  { type:'item', text:'墊池登錄改為預設「花費抽數」' },
+  { type:'item', text:'剩餘抽數自動根據上一筆紀錄計算' },
 ];
 
     // --- 專屬圖標組件 ---
@@ -272,7 +270,7 @@ useEffect(() => {
 
       const openWishModal=()=>{
         setEditingId(null);setRecordType('pull');setSubPoolType('single');setPityLabel('墊池');setCardType('moon');
-        setPullCountInput(pityInfo.accumulated>0?(pityInfo.accumulated+1).toString():'');
+        setPullCountInput('');
         setRemainingPullsInput(currentRemaining);setEventName(activeTab==='standard'?'極空迴響':(selectedEventFilter!=='all'?selectedEventFilter:''));
         setEventDate(new Date().toISOString().split('T')[0]);setCardName('');setIsLost5050(false);
         setIsNotTarget(false);setInputMode('cost');setSelectedChar(null);setIsModalOpen(true);
@@ -302,8 +300,10 @@ useEffect(() => {
           savedTotalPulls=pullCountInput===''?(pityInfo.accumulated+1):parseInt(pullCountInput);
           savedRemaining=70;newPoolPity=0;
         } else {
-          if(inputMode==='cost'){savedTotalPulls=pullCountInput===''?(pityInfo.accumulated+1):parseInt(pullCountInput);savedRemaining=maxPity-savedTotalPulls;}
-          else{savedRemaining=remainingPullsInput===''?70:parseInt(remainingPullsInput);savedTotalPulls=maxPity-savedRemaining;}
+          savedTotalPulls=pullCountInput===''?1:parseInt(pullCountInput);
+          const lastRecord=history.filter(r=>r.poolType===activeTab).sort((a,b)=>{const da=new Date(a.eventDate||a.date),db=new Date(b.eventDate||b.date);return db-da;})[0];
+          const prevRemaining=lastRecord?lastRecord.remainingAtRecord:70;
+          savedRemaining=prevRemaining-savedTotalPulls;
           newPoolPity=savedTotalPulls;
         }
         const now=new Date().toISOString();
@@ -729,8 +729,11 @@ useEffect(() => {
                     <label className="text-[10px] text-slate-500 font-black uppercase mb-3 block tracking-widest text-center">紀錄性質</label>
                     <div className="grid grid-cols-2 gap-3 p-1 bg-white/5 rounded-2xl">
                       <button onClick={()=>{setRecordType('pull');setInputMode('cost');}} className={`flex items-center justify-center gap-2 py-3 rounded-xl text-[12px] font-black ${recordType==='pull'?'bg-amber-500 text-black shadow-lg':'text-slate-500'}`}><Target size={14}/> 出金</button>
-                      <button onClick={()=>{setRecordType('pity');setInputMode('remain');}} className={`flex items-center justify-center gap-2 py-3 rounded-xl text-[12px] font-black ${recordType==='pity'?'bg-indigo-600 text-white shadow-lg':'text-slate-500'}`}><Zap size={14}/> 墊池</button>
+                      <button onClick={()=>{setRecordType('pity');setInputMode('cost');}} className={`flex items-center justify-center gap-2 py-3 rounded-xl text-[12px] font-black ${recordType==='pity'?'bg-indigo-600 text-white shadow-lg':'text-slate-500'}`}><Zap size={14}/> 墊池</button>
                     </div>
+                    {recordType==='pity'&&history.filter(r=>r.poolType===activeTab).length===0&&(
+                      <p className="text-[11px] text-amber-400/80 tracking-wide px-1">✦ 第一筆建議登錄出金紀錄，保底計算更準確</p>
+                    )}
                   </div>
                   <div>
                     <label className="text-[10px] text-slate-500 font-black uppercase mb-2 block tracking-widest">思念角色</label>
@@ -791,13 +794,13 @@ useEffect(() => {
       <button onClick={()=>setInputMode('cost')} className={`py-2.5 rounded-xl text-[11px] font-black ${inputMode==='cost'?'bg-indigo-600 text-white':'text-slate-500'}`}>花費抽數</button>
       <button onClick={()=>setInputMode('remain')} className={`py-2.5 rounded-xl text-[11px] font-black ${inputMode==='remain'?'bg-indigo-600 text-white':'text-slate-500'}`}>剩餘抽數</button>
     </div>
-    <p className="text-[10px] text-slate-200 tracking-wide mt-1 px-1">
-      {inputMode==='cost'?'✦ 出金建議使用此模式':'✦ 墊池建議使用此模式'}
+    <p className="text-[11px] text-slate-200 tracking-wide mt-1 px-1">
+      {inputMode==='cost'?'✦ 補登歷史紀錄建議使用此模式':'✦ 對照遊戲畫面輸入更方便'}
     </p>
   </div>
                     <div>
-                      <label className="text-[10px] text-slate-500 font-black uppercase mb-2 block tracking-widest">{inputMode==='cost'?'花費抽數':'剩餘抽數'}</label>
-                      <input type="number" value={inputMode==='cost'?pullCountInput:remainingPullsInput} onChange={(e)=>inputMode==='cost'?setPullCountInput(e.target.value):setRemainingPullsInput(e.target.value)} className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-[12px] text-slate-200 focus:outline-none"/>
+                      <label className="text-[10px] text-slate-500 font-black uppercase mb-2 block tracking-widest">{recordType==='pity'?'花費抽數':inputMode==='cost'?'花費抽數':'剩餘抽數'}</label>
+                      <input type="number" value={recordType==='pity'?pullCountInput:inputMode==='cost'?pullCountInput:remainingPullsInput} onChange={(e)=>recordType==='pity'?setPullCountInput(e.target.value):inputMode==='cost'?setPullCountInput(e.target.value):setRemainingPullsInput(e.target.value)} className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-[12px] text-slate-200 focus:outline-none"/>
                     </div>
                   </div>
                   <div className="flex gap-3">
