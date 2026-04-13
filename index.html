@@ -77,11 +77,12 @@
       setPools: (data) => { localStorage.setItem(STORAGE_KEYS.pools, JSON.stringify(data)); },
     };
     const generateId = () => `${Date.now()}_${Math.random().toString(36).slice(2,9)}`;
-    const APP_VERSION = '1.2.0';
+    const APP_VERSION = '1.2.1';
 const PATCH_NOTES = [
-  { type:'date', text:'115.3.23' },
-  { type:'item', text:'墊池登錄改為預設「花費抽數」' },
-  { type:'item', text:'剩餘抽數自動根據上一筆紀錄計算' },
+  { type:'date', text:'115.4.13' },
+  { type:'item', text:'修正同日紀錄活動統計出金分布順序問題' },
+  { type:'item', text:'修正墊池剩餘抽數顯示問題' },
+  { type:'item', text:'修正編輯舊記錄抽數加總問題' },
 ];
 
     // --- 專屬圖標組件 ---
@@ -145,7 +146,7 @@ const PATCH_NOTES = [
         quotes:["我不在乎臨空市怎麼樣，我關心的對象是你","靈魂相契，永不背叛","得讓大家看到，我有心上人了","沒有什麼是比靠自己調整好的狀態更有力量","我是不是可以認為，有一天即便沒有鏈路了，你也會選擇站在我身邊","塔爾城也可以開滿鮮花，只為一人開放","想見你，不需要什麼理由","有沒有跟你說過，我一直很喜歡你志在必得的樣子","花瓣帶著你一起出現在龍的夢裡，那龍會期待著每一個夜晚，風和花瓣的來臨","一旦我們雙手相握，從此便生死與共了"] },
       { id:'caleb', name:'夏以晝', engName:'Caleb', glowColor:'rgba(251,146,60,0.7)', dimGlow:'rgba(251,146,60,0.4)', solidColor:'from-orange-500 via-red-600 to-red-800',
         icon:<CalebApple size={16}/>,
-        quotes:["所有朝你打來的風雨，都不該出現在這個世界上","你願意給的，就是我想要的。你想得到的，就是我願意付出的。","汪","下輩子的小海鳥，別再讓我錯過你了","或許我們天生就屬於彼此，妹妹","你將指引我返航的方向","你有沒有想過，我從來都不是你的哥哥","不需要我？好啊，那你需要什麼？我都可以答應","夏以晝的弱點，與你有關","我不罩著你，難道還要別人來"] },
+        quotes:["所有朝你打來的風雨，都不該出現在這個世界上","你願意給的，就是我想要的。你想得到的，就是我願意付出的。","汪","真巧...這萬千世界裡，我也最最心愛你","下輩子的小海鳥，別再讓我錯過你了","或許我們天生就屬於彼此，妹妹","你將指引我返航的方向","你有沒有想過，我從來都不是你的哥哥","不需要我？好啊，那你需要什麼？我都可以答應","夏以晝的弱點，與你有關","我不罩著你，難道還要別人來"] },
       { id:'other', name:'墊池', engName:'Pity', glowColor:'rgba(148,163,184,0.5)', dimGlow:'rgba(148,163,184,0.3)', solidColor:'from-slate-700 to-slate-950',
         icon:<Info size={14}/>,
         quotes:["請再努力一下，為了你想見的人、想做的事、想成為的自己"] },
@@ -215,7 +216,7 @@ useEffect(() => {
 
       const eventAnalysis = useMemo(() => {
         if(selectedEventFilter==='all') return null;
-        const evRecs=history.filter(r=>r.eventName===selectedEventFilter).sort((a,b)=>new Date(a.eventDate||a.date)-new Date(b.eventDate||b.date));
+        const evRecs=history.filter(r=>r.eventName===selectedEventFilter).sort((a,b)=>{const da=new Date(a.eventDate||a.date),db=new Date(b.eventDate||b.date);if(da-db!==0)return da-db;return(a.date||"").localeCompare(b.date||"");});
         const pulls=evRecs.filter(r=>r.recordType==='pull');
         const pities=evRecs.filter(r=>r.recordType==='pity');
         let total=0;
@@ -285,7 +286,7 @@ useEffect(() => {
         setEventDate(fd);setCardName(record.cardName||'');
         setPullCountInput(record.totalPulls?record.totalPulls.toString():'');
         setRemainingPullsInput(record.remainingAtRecord);setIsLost5050(record.isLost5050||false);
-        setIsNotTarget(record.isNotTarget||false);setInputMode(record.recordType==='pull'?'cost':'remain');
+        setIsNotTarget(record.isNotTarget||false);setInputMode('cost');
         setIsModalOpen(true);
       };
 
@@ -788,6 +789,7 @@ useEffect(() => {
                     </div>
                   )}
                   <div className="pt-4 border-t border-white/5 space-y-4">
+  {recordType==='pity'&&(
   <div>
     <label className="text-[10px] text-slate-500 font-black uppercase mb-3 block tracking-widest text-center">選擇填寫方式</label>
     <div className="grid grid-cols-2 gap-3 p-1 bg-white/5 rounded-2xl border border-white/10">
@@ -798,6 +800,7 @@ useEffect(() => {
       {inputMode==='cost'?'✦ 補登歷史紀錄建議使用此模式':'✦ 對照遊戲畫面輸入更方便'}
     </p>
   </div>
+  )}
                     <div>
                       <label className="text-[10px] text-slate-500 font-black uppercase mb-2 block tracking-widest">{recordType==='pity'?'花費抽數':inputMode==='cost'?'花費抽數':'剩餘抽數'}</label>
                       <input type="number" value={recordType==='pity'?pullCountInput:inputMode==='cost'?pullCountInput:remainingPullsInput} onChange={(e)=>recordType==='pity'?setPullCountInput(e.target.value):inputMode==='cost'?setPullCountInput(e.target.value):setRemainingPullsInput(e.target.value)} className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-[12px] text-slate-200 focus:outline-none"/>
