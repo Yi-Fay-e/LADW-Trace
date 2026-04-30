@@ -77,11 +77,11 @@
       setPools: (data) => { localStorage.setItem(STORAGE_KEYS.pools, JSON.stringify(data)); },
     };
     const generateId = () => `${Date.now()}_${Math.random().toString(36).slice(2,9)}`;
-    const APP_VERSION = '1.2.0';
+    const APP_VERSION = '1.3.0';
 const PATCH_NOTES = [
-  { type:'date', text:'115.3.23' },
-  { type:'item', text:'墊池登錄改為預設「花費抽數」' },
-  { type:'item', text:'剩餘抽數自動根據上一筆紀錄計算' },
+  { type:'date', text:'115.4.30' },
+  { type: 'note', text: '混池登錄調整為可同時標記歪卡與定向狀態' },
+  { type: 'note', text: '新增各男主專屬語錄' },
 ];
 
     // --- 專屬圖標組件 ---
@@ -133,19 +133,19 @@ const PATCH_NOTES = [
     const CHARACTERS = [
       { id:'xavier', name:'沈星回', engName:'Xavier', glowColor:'rgba(255,235,59,0.7)', dimGlow:'rgba(255,235,59,0.4)', solidColor:'from-yellow-200 via-yellow-500 to-yellow-600',
         icon:<Star size={14} fill="currentColor"/>,
-        quotes:["如果這個世界真的已經無處可逃，那至少你還可以逃來我身邊","如果下一個春天還很遙遠，我們現在就見面吧","我不會離開，因為你還在這裡","我的光芒，只朝向你在的方向","希望我能成為你的歸屬，永遠在你眼中","還是讓星星自己落下來，留在你身邊吧","可我本來就偏心你","無論多少次，無論你在哪，我都會找到你","樓下的貓很想你，我也是","你在哪裡，光就在哪裡"] },
+        quotes:["如果這個世界真的已經無處可逃，那至少你還可以逃來我身邊","我們一起逃去烏魯魯星","那我和光獵之間，你更喜歡哪一個?","只要我的心臟還在跳動，就會站在你的身邊，直到最後一刻。","所以總有一天 ，我們一定還會在星空下重逢。","夜空下等待的你，是他追逐了無數次的流星","如果下一個春天還很遙遠，我們現在就見面吧","我不會離開，因為你還在這裡","我的光芒，只朝向你在的方向","希望我能成為你的歸屬，永遠在你眼中","還是讓星星自己落下來，留在你身邊吧","可我本來就偏心你","無論多少次，無論你在哪，我都會找到你","樓下的貓很想你，我也是","你在哪裡，光就在哪裡"] },
       { id:'zayne', name:'黎深', engName:'Zayne', glowColor:'rgba(56,189,248,0.8)', dimGlow:'rgba(56,189,248,0.4)', solidColor:'from-sky-100 via-sky-500 to-blue-800',
         icon:<ZayneSnowflake size={14}/>,
-        quotes:["如果是週末見你，我一般從週四開始高興","只要你需要，永遠都會有一場不會消融的雪只為你而下","出格的事，總是讓人上癮","希望你不要生病，不要受傷，不要總是和黎醫生見面，而是多和\"黎深\"見面","你獨佔春天，我獨佔你","靈魂先於我的記憶，認出了你","想你一個人有沒有好好吃飯、照顧好自己的身體，萬一等不到我，會不會生氣","以後也一起看月亮吧，意中人","我最想珍藏、最喜歡的瞬間，一定都有你的身影","我還想要下一個「十年」"] },
+        quotes:["如果是週末見你，我一般從週四開始高興","吼猴","看仔細了，只教一次!","感覺不開心可以哭一會，沒有人看到就不算哭過","不必直視黑暗，你只需妄想新生","只要你需要，永遠都會有一場不會消融的雪只為你而下","出格的事，總是讓人上癮","希望你不要生病，不要受傷，不要總是和黎醫生見面，而是多和\"黎深\"見面","你獨佔春天，我獨佔你","靈魂先於我的記憶，認出了你","想你一個人有沒有好好吃飯、照顧好自己的身體，萬一等不到我，會不會生氣","以後也一起看月亮吧，意中人","我最想珍藏、最喜歡的瞬間，一定都有你的身影","我還想要下一個「十年」"] },
       { id:'rafayel', name:'祁煜', engName:'Rafayel', glowColor:'rgba(219,112,147,0.5)', dimGlow:'rgba(136,19,55,0.3)', solidColor:'from-pink-400 via-purple-700 to-black',
         icon:<RafayelFish size={14}/>,
-        quotes:["等你等了八百年，水母都能走路了，海龜都會爬樹了，連鯊魚都改吃素了","我數著每天的潮漲潮落，日升月起，終於，要等到和你見面的日子了","願深海的祝福，與你我同在","奇怪，今天特別想你","我想看的世界，在你眼裡","我為你許下的願望會一直飄行在海上，因為我的火焰永不熄滅","你剛不是問，大海裡最珍貴的寶貝是什麼嗎？你笑一笑，就知道了","我祝你希望永不滅","只要你會來，等待就值得","又見面了，保鏢小姐"] },
+        quotes:["等你等了八百年，水母都能走路了，海龜都會爬樹了，連鯊魚都改吃素了","我數著每天的潮漲潮落，日升月起，終於，要等到和你見面的日子了","咕嚕嚕嚕嚕，我是魚，看不懂人類的手勢","你應該要到月光下，到太陽下，那才是原本的你","你的優點就是，你是你吧","只要看到你的笑臉，我的心情就一定會變好","祁煜說，他的世界永遠歡迎你","願深海的祝福，與你我同在","奇怪，今天特別想你","我想看的世界，在你眼裡","我為你許下的願望會一直飄行在海上，因為我的火焰永不熄滅","你剛不是問，大海裡最珍貴的寶貝是什麼嗎？你笑一笑，就知道了","我祝你希望永不滅","只要你會來，等待就值得","又見面了，保鏢小姐"] },
       { id:'sylus', name:'秦徹', engName:'Sylus', glowColor:'rgba(239,68,68,0.7)', dimGlow:'rgba(239,68,68,0.4)', solidColor:'from-red-900 to-black',
         icon:<SylusFeather size={14}/>,
-        quotes:["我不在乎臨空市怎麼樣，我關心的對象是你","靈魂相契，永不背叛","得讓大家看到，我有心上人了","沒有什麼是比靠自己調整好的狀態更有力量","我是不是可以認為，有一天即便沒有鏈路了，你也會選擇站在我身邊","塔爾城也可以開滿鮮花，只為一人開放","想見你，不需要什麼理由","有沒有跟你說過，我一直很喜歡你志在必得的樣子","花瓣帶著你一起出現在龍的夢裡，那龍會期待著每一個夜晚，風和花瓣的來臨","一旦我們雙手相握，從此便生死與共了"] },
+        quotes:["我不在乎臨空市怎麼樣，我關心的對象是你","靈魂相契，永不背叛",,"得讓大家看到，我有心上人了","沒有什麼是比靠自己調整好的狀態更有力量","我是不是可以認為，有一天即便沒有鏈路了，你也會選擇站在我身邊","許願我面前的你，永遠活得恣意熱烈","塔爾城也可以開滿鮮花，只為一人開放","想見你，不需要什麼理由","有沒有跟你說過，我一直很喜歡你志在必得的樣子","你是我餘生唯一想要共享危險與浪漫的那個人","花瓣帶著你一起出現在龍的夢裡，那龍會期待著每一個夜晚，風和花瓣的來臨","我的靈魂裡，有我的愛人","做得很好，去炫耀吧","那就留下更多記憶吧，直到真正的末日到來那天","一旦我們雙手相握，從此便生死與共了"] },
       { id:'caleb', name:'夏以晝', engName:'Caleb', glowColor:'rgba(251,146,60,0.7)', dimGlow:'rgba(251,146,60,0.4)', solidColor:'from-orange-500 via-red-600 to-red-800',
         icon:<CalebApple size={16}/>,
-        quotes:["所有朝你打來的風雨，都不該出現在這個世界上","你願意給的，就是我想要的。你想得到的，就是我願意付出的。","汪","下輩子的小海鳥，別再讓我錯過你了","或許我們天生就屬於彼此，妹妹","你將指引我返航的方向","你有沒有想過，我從來都不是你的哥哥","不需要我？好啊，那你需要什麼？我都可以答應","夏以晝的弱點，與你有關","我不罩著你，難道還要別人來"] },
+        quotes:["所有朝你打來的風雨，都不該出現在這個世界上","你願意給的，就是我想要的。你想得到的，就是我願意付出的。","汪","真巧...這萬千世界裡，我也最最心愛你","下輩子的小海鳥，別再讓我錯過你了，你已經讓我很驕傲了","或許我們天生就屬於彼此，妹妹","你將指引我返航的方向","我想要你留在這裡，留下來，跟我過一百年","我是夏以晝，我是你的哥哥","你我是天地間最密不可分之人，自然沒有什麼是不可以的","你有沒有想過，我從來都不是你的哥哥","不需要我？好啊，那你需要什麼？我都可以答應","怎麼能叫浪費?想要填滿你的每一寸，本來就是我蓄謀已久","夏以晝的弱點，與你有關","也許因為⋯我剛好也比你想像中多愛你一點","我不罩著你，難道還要別人來"] },
       { id:'other', name:'墊池', engName:'Pity', glowColor:'rgba(148,163,184,0.5)', dimGlow:'rgba(148,163,184,0.3)', solidColor:'from-slate-700 to-slate-950',
         icon:<Info size={14}/>,
         quotes:["請再努力一下，為了你想見的人、想做的事、想成為的自己"] },
@@ -215,7 +215,7 @@ useEffect(() => {
 
       const eventAnalysis = useMemo(() => {
         if(selectedEventFilter==='all') return null;
-        const evRecs=history.filter(r=>r.eventName===selectedEventFilter).sort((a,b)=>new Date(a.eventDate||a.date)-new Date(b.eventDate||b.date));
+        const evRecs=history.filter(r=>r.eventName===selectedEventFilter).sort((a,b)=>{const da=new Date(a.eventDate||a.date),db=new Date(b.eventDate||b.date);if(da-db!==0)return da-db;return(a.date||"").localeCompare(b.date||"");});
         const pulls=evRecs.filter(r=>r.recordType==='pull');
         const pities=evRecs.filter(r=>r.recordType==='pity');
         let total=0;
@@ -285,7 +285,7 @@ useEffect(() => {
         setEventDate(fd);setCardName(record.cardName||'');
         setPullCountInput(record.totalPulls?record.totalPulls.toString():'');
         setRemainingPullsInput(record.remainingAtRecord);setIsLost5050(record.isLost5050||false);
-        setIsNotTarget(record.isNotTarget||false);setInputMode(record.recordType==='pull'?'cost':'remain');
+        setIsNotTarget(record.isNotTarget||false);setInputMode('cost');
         setIsModalOpen(true);
       };
 
@@ -777,9 +777,9 @@ useEffect(() => {
                     <div className="space-y-4">
                       <div className="flex items-center justify-between p-4 bg-rose-500/5 rounded-2xl border border-rose-500/20">
                         <span className="text-[12px] font-black text-rose-300">歪卡？</span>
-                        <button onClick={()=>{setIsLost5050(!isLost5050);if(!isLost5050)setIsNotTarget(false);}} className={`px-4 py-1.5 rounded-full text-[11px] font-black ${isLost5050?'bg-rose-500 text-white shadow-lg':'text-slate-400'}`}>{isLost5050?'是的':'沒歪'}</button>
+                        <button onClick={()=>setIsLost5050(!isLost5050)} className={`px-4 py-1.5 rounded-full text-[11px] font-black ${isLost5050?'bg-rose-500 text-white shadow-lg':'text-slate-400'}`}>{isLost5050?'是的':'沒歪'}</button>
                       </div>
-                      {subPoolType==='multi'&&!isLost5050&&(
+                      {subPoolType==='multi'&&(
                         <div className="flex items-center justify-between p-4 bg-sky-500/5 rounded-2xl border border-sky-500/20">
                           <span className="text-[12px] font-black text-sky-400">非定向限定卡？</span>
                           <button onClick={()=>setIsNotTarget(!isNotTarget)} className={`px-4 py-1.5 rounded-full text-[11px] font-black ${isNotTarget?'bg-sky-500 text-white shadow-lg':'text-slate-400'}`}>{isNotTarget?'是的':'定向中'}</button>
@@ -788,6 +788,7 @@ useEffect(() => {
                     </div>
                   )}
                   <div className="pt-4 border-t border-white/5 space-y-4">
+  {recordType==='pity'&&(
   <div>
     <label className="text-[10px] text-slate-500 font-black uppercase mb-3 block tracking-widest text-center">選擇填寫方式</label>
     <div className="grid grid-cols-2 gap-3 p-1 bg-white/5 rounded-2xl border border-white/10">
@@ -798,6 +799,7 @@ useEffect(() => {
       {inputMode==='cost'?'✦ 補登歷史紀錄建議使用此模式':'✦ 對照遊戲畫面輸入更方便'}
     </p>
   </div>
+  )}
                     <div>
                       <label className="text-[10px] text-slate-500 font-black uppercase mb-2 block tracking-widest">{recordType==='pity'?'花費抽數':inputMode==='cost'?'花費抽數':'剩餘抽數'}</label>
                       <input type="number" value={recordType==='pity'?pullCountInput:inputMode==='cost'?pullCountInput:remainingPullsInput} onChange={(e)=>recordType==='pity'?setPullCountInput(e.target.value):inputMode==='cost'?setPullCountInput(e.target.value):setRemainingPullsInput(e.target.value)} className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-[12px] text-slate-200 focus:outline-none"/>
