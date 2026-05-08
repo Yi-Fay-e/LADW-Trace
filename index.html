@@ -77,11 +77,11 @@
       setPools: (data) => { localStorage.setItem(STORAGE_KEYS.pools, JSON.stringify(data)); },
     };
     const generateId = () => `${Date.now()}_${Math.random().toString(36).slice(2,9)}`;
-    const APP_VERSION = '1.3.0';
+    const APP_VERSION = '1.3.1';
 const PATCH_NOTES = [
   { type:'date', text:'115.4.30' },
-  { type: 'note', text: '混池登錄調整為可同時標記歪卡與定向狀態' },
-  { type: 'note', text: '新增各男主專屬語錄' },
+  { type:'note', text:'修正墊池登錄剩餘抽數模式計算問題' },
+  { type:'note', text:'修正編輯墊池紀錄時抽數累計計算問題' },
 ];
 
     // --- 專屬圖標組件 ---
@@ -300,12 +300,21 @@ useEffect(() => {
           savedTotalPulls=pullCountInput===''?(pityInfo.accumulated+1):parseInt(pullCountInput);
           savedRemaining=70;newPoolPity=0;
         } else {
-          savedTotalPulls=pullCountInput===''?1:parseInt(pullCountInput);
-          const lastRecord=history.filter(r=>r.poolType===activeTab).sort((a,b)=>{const da=new Date(a.eventDate||a.date),db=new Date(b.eventDate||b.date);return db-da;})[0];
-          const prevRemaining=lastRecord?lastRecord.remainingAtRecord:70;
-          savedRemaining=prevRemaining-savedTotalPulls;
-          newPoolPity=savedTotalPulls;
-        }
+  const lastRecord = history
+    .filter(r => r.poolType === activeTab && r.id !== editingId)  // ← 加上排除自己
+    .sort((a,b)=>{const da=new Date(a.eventDate||a.date),db=new Date(b.eventDate||b.date);return db-da;})[0];
+  const prevRemaining = lastRecord ? lastRecord.remainingAtRecord : 70;
+
+  if (inputMode === 'remain') {
+    // 直接用玩家輸入的剩餘抽數
+    savedRemaining = parseInt(remainingPullsInput);
+    savedTotalPulls = prevRemaining - savedRemaining;
+  } else {
+    savedTotalPulls = pullCountInput === '' ? 1 : parseInt(pullCountInput);
+    savedRemaining = prevRemaining - savedTotalPulls;
+  }
+  newPoolPity = savedTotalPulls;
+}
         const now=new Date().toISOString();
         const recordData={
           character:selectedChar||'other',eventName:eventName||'一般活動',eventDate:eventDate.replace(/-/g,'/')||(()=>{const n=new Date();return`${n.getFullYear()}/${String(n.getMonth()+1).padStart(2,'0')}/${String(n.getDate()).padStart(2,'0')}`})(),
@@ -801,8 +810,13 @@ useEffect(() => {
   </div>
   )}
                     <div>
-                      <label className="text-[10px] text-slate-500 font-black uppercase mb-2 block tracking-widest">{recordType==='pity'?'花費抽數':inputMode==='cost'?'花費抽數':'剩餘抽數'}</label>
-                      <input type="number" value={recordType==='pity'?pullCountInput:inputMode==='cost'?pullCountInput:remainingPullsInput} onChange={(e)=>recordType==='pity'?setPullCountInput(e.target.value):inputMode==='cost'?setPullCountInput(e.target.value):setRemainingPullsInput(e.target.value)} className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-[12px] text-slate-200 focus:outline-none"/>
+                      <label className="text-[10px] text-slate-500 font-black uppercase mb-2 block tracking-widest">
+  {recordType==='pity'?(inputMode==='remain'?'剩餘抽數':'花費抽數'):inputMode==='cost'?'花費抽數':'剩餘抽數'}
+</label>
+<input type="number" 
+  value={recordType==='pity'?(inputMode==='remain'?remainingPullsInput:pullCountInput):inputMode==='cost'?pullCountInput:remainingPullsInput} 
+  onChange={(e)=>recordType==='pity'?(inputMode==='remain'?setRemainingPullsInput(e.target.value):setPullCountInput(e.target.value)):inputMode==='cost'?setPullCountInput(e.target.value):setRemainingPullsInput(e.target.value)} 
+  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-[12px] text-slate-200 focus:outline-none"/>
                     </div>
                   </div>
                   <div className="flex gap-3">
