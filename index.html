@@ -77,11 +77,10 @@
       setPools: (data) => { localStorage.setItem(STORAGE_KEYS.pools, JSON.stringify(data)); },
     };
     const generateId = () => `${Date.now()}_${Math.random().toString(36).slice(2,9)}`;
-    const APP_VERSION = '1.3.1';
-const PATCH_NOTES = [
-  { type:'date', text:'115.4.30' },
-  { type:'note', text:'修正墊池登錄剩餘抽數模式計算問題' },
-  { type:'note', text:'修正編輯墊池紀錄時抽數累計計算問題' },
+    const APP_VERSION = '1.3.2';
+    const PATCH_NOTES = [
+  { type:'date', text:'115.6.3' },
+  { type:'note', text:'復刻池新增多人混池機制' },
 ];
 
     // --- 專屬圖標組件 ---
@@ -627,7 +626,7 @@ useEffect(() => {
                       <div className="flex justify-between items-start mb-3 relative z-10">
                         <div className="flex items-center gap-2">
                           <span className={`text-[11px] font-black uppercase px-2 py-0.5 rounded ${isPity?'bg-indigo-900/40 text-indigo-300':'bg-amber-500/20 text-amber-500'}`}>{isPity?(record.pityLabel||'墊池'):'出金'}</span>
-                          <span className="text-[11px] font-black text-slate-400 uppercase">{record.poolType==='event'?(record.subPoolType==='multi'?'限定(混)':'限定(單)'):MAIN_TABS.find(t=>t.id===record.poolType)?.name}</span>
+                          <span className="text-[11px] font-black text-slate-400 uppercase">{(record.poolType==='event'||record.poolType==='rerun')?(record.subPoolType==='multi'?(record.poolType==='event'?'限定(混)':'復刻(混)'):(record.poolType==='event'?'限定(單)':'復刻(單)')):MAIN_TABS.find(t=>t.id===record.poolType)?.name}</span>
                         </div>
                         <span className="text-[11px] text-slate-500 font-bold flex items-center gap-1 mr-16"><Clock size={10}/> {record.eventDate}</span>
                       </div>
@@ -725,7 +724,7 @@ useEffect(() => {
     <span className="px-4 py-1.5 rounded-full text-[11px] font-black bg-indigo-500/20 border border-indigo-500/40 text-indigo-200">第 {specialCardIndex} 張</span>
   </div>
 )}
-                  {activeTab==='event'&&(
+                  {(activeTab==='event'||activeTab==='rerun')&&(
                     <div>
                       <label className="text-[10px] text-slate-500 font-black uppercase mb-3 block tracking-widest text-center">限定池類型</label>
                       <div className="grid grid-cols-2 gap-3 p-1 bg-white/5 rounded-2xl border border-white/10">
